@@ -34,7 +34,7 @@ spec:
           command:
           - sh
           - '-c'
-          - 'until nslookup {{ include "prefect-ui.fullname" . }}-postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.fullname" . }}-postgres; sleep 2; done'
+          - 'until nslookup {{ include "prefect-ui.name" . }}-postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.name" . }}-postgres; sleep 2; done'
       containers:
         - name: hasura
           securityContext:
@@ -46,7 +46,7 @@ spec:
           - serve
           env:
             - name: HASURA_GRAPHQL_DATABASE_URL
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-postgres, key: DATABASE_URL } }
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: DATABASE_URL } }
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
               value: "true"
             - name: HASURA_GRAPHQL_SERVER_PORT
