@@ -1,3 +1,4 @@
+{{ if .Values.prefect.website.create }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -27,3 +28,4 @@ data:
     endpoint = "${cloud.api}"
     graphql = "${cloud.api}/graphql/alpha"
   {{- (.Files.Glob "files/configmap/website*").AsConfig | nindent 2 }}
+{{ end }}

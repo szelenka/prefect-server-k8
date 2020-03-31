@@ -1,25 +1,23 @@
-{{ if .Values.prefect.postgres.create }}
-# ref: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
-# ref: https://hub.docker.com/r/centos/postgresql-10-centos7
+{{ if .Values.prefect.minio.create }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "prefect-ui.name" . }}-postgres
+  name: {{ include "prefect-ui.name" . }}-minio
   namespace: {{ include "prefect-ui.namespace" . }}
   labels:
-    app.kubernetes.io/component: postgres
+    app.kubernetes.io/component: minio
     {{- include "prefect-ui.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "prefect-ui.name" . }}-postgres
+  serviceName: {{ include "prefect-ui.name" . }}-minio
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: postgres
+      app.kubernetes.io/component: minio
       {{- include "prefect-ui.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: postgres
+        app.kubernetes.io/component: minio
         {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
@@ -30,38 +28,26 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: postgres
+        - name: minio
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.postgres.image.repository }}"
-          imagePullPolicy: {{ .Values.prefect.postgres.image.pullPolicy }}
+          image: "{{ .Values.prefect.minio.image.repository }}"
+          imagePullPolicy: {{ .Values.prefect.minio.image.pullPolicy }}
           env:
-            - name: POSTGRESQL_USER
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_USER } }
-            - name: POSTGRESQL_PASSWORD
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_PASSWORD } }
-            - name: POSTGRESQL_DATABASE
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_DB } }
-            - name: POSTGRESQL_MIGRATION_IGNORE_ERRORS
-              value: "no"
-            - name: POSTGRESQL_MAX_CONNECTIONS
-              value: "150"
-            - name: POSTGRESQL_MAX_PREPARED_TRANSACTIONS
-              value: "0"
-            - name: POSTGRESQL_SHARED_BUFFERS
-              value: 32MB
-            - name: POSTGRESQL_EFFECTIVE_CACHE_SIZE
-              value: 128MB
-            {{- with .Values.prefect.postgres.environment }}
+            - name: MINIO_ACCESS_KEY
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-minio, key: MINIO_ACCESS_KEY } }
+            - name: MINIO_SECRET_KEY
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-minio, key: MINIO_SECRET_KEY } }
+            {{- with .Values.prefect.minio.environment }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           ports:
-            - name: {{ .Values.prefect.postgres.service.name }}
-              containerPort: {{ .Values.prefect.postgres.service.port }}
+            - name: {{ .Values.prefect.minio.service.name }}
+              containerPort: {{ .Values.prefect.minio.service.port }}
               protocol: TCP
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.prefect.postgres.service.port }}
+              port: {{ .Values.prefect.minio.service.port }}
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 1
@@ -69,7 +55,7 @@ spec:
             failureThreshold: 3
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.prefect.postgres.service.port }}
+              port: {{ .Values.prefect.minio.service.port }}
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 1
@@ -83,11 +69,11 @@ spec:
               mountPath: {{ .Values.prefect.postgres.volume.mounts.mountPoint }}
               subPath: {{ .Values.prefect.postgres.volume.mounts.subPath }}
           resources:
-            {{- toYaml .Values.prefect.postgres.resources | nindent 12 }}
+            {{- toYaml .Values.prefect.minio.resources | nindent 12 }}
       volumes:
         - name: configmap-files
           configMap:
-            name: {{ include "prefect-ui.name" . }}-postgres
+            name: {{ include "prefect-ui.name" . }}-minio
     {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -102,11 +88,11 @@ spec:
     {{- end }}
   volumeClaimTemplates:
   - metadata:
-      name: postgresdb
+      name: miniodb
     spec:
       accessModes: [ "ReadWriteOnce" ]
 #      storageClassName: gp2
       resources:
         requests:
-          storage: {{ .Values.prefect.postgres.volume.storage }}
+          storage: {{ .Values.prefect.minio.volume.storage }}
 {{ end }}

@@ -1,3 +1,4 @@
+{{ if .Values.prefect.hasura.create }}
 # ref: https://github.com/hasura/graphql-engine/tree/master/install-manifests/kubernetes
 apiVersion: apps/v1
 kind: Deployment
@@ -91,3 +92,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+{{ end }}

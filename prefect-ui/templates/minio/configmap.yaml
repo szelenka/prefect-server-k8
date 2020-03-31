@@ -1,16 +1,16 @@
-{{ if .Values.prefect.postgres.create }}
+{{ if .Values.prefect.minio.create }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "prefect-ui.name" . }}-postgres
+  name: {{ include "prefect-ui.name" . }}-minio
   namespace: {{ include "prefect-ui.namespace" . }}
   labels:
-    app.kubernetes.io/component: postgres
+    app.kubernetes.io/component: minio
     {{- include "prefect-ui.labels" . | nindent 4 }}
-#    app.kubernetes.io/component: postgres
+#    app.kubernetes.io/component: minio
 #    app.kubernetes.io/name: {{ include "prefect-ui.name" . }}
 #    app.kubernetes.io/part-of: {{ default (include "prefect-ui.name" .) }}
 #    app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
-  {{- (.Files.Glob "files/configmap/postgres*").AsConfig | nindent 2 }}
+  {{- (.Files.Glob "files/configmap/minio*").AsConfig | nindent 2 }}
 {{ end }}

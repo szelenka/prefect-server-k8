@@ -1,4 +1,5 @@
 {{- if eq .Values.ingress.type "route" -}}
+{{ if and (.Values.prefect.website.create) (.Values.prefect.website.service.domainName) }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -33,7 +34,9 @@ status:
     host: null
     routerName: null
     wildcardPolicy: None
+{{ end }}
 ---
+{{ if and (.Values.prefect.apollo.create) (.Values.prefect.apollo.service.domainName) }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -68,4 +71,42 @@ status:
     host: null
     routerName: null
     wildcardPolicy: None
+{{ end }}
+---
+{{ if and (.Values.prefect.minio.create) (.Values.prefect.minio.service.domainName) }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-minio
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: minio
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.prefect.minio.service.domainName | quote }}
+  port:
+    targetPort: {{ .Values.prefect.minio.service.port }}
+{{- if .Values.ingress.tls }}
+  tls:
+    termination: edge
+    key: {{ .Values.ingress.secrets.key }}
+    certificate: {{ .Values.ingress.secrets.cert }}
+{{- end }}
+  to:
+    kind: Service
+    name: {{ include "prefect-ui.fullname" . }}-minio
+    weight: 100
+status:
+  ingress:
+  - conditions:
+    - status: "True"
+      type: Admitted
+    host: null
+    routerName: null
+    wildcardPolicy: None
+{{ end }}
 {{- end }}
