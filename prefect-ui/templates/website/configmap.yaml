@@ -13,13 +13,13 @@ data:
     backend = "server"
 
     [server]
-    host = "http://{{ .Values.prefect.apollo.service.domainName }}"
-    port = "{{ .Values.prefect.apollo.service.port | toString }}"
+    host = "http{{ if .Values.ingress.tls }}s{{ end }}://{{ .Values.prefect.apollo.service.domainName }}"
+    port = "{{ if .Values.ingress.tls }}443{{ else }}80{{ end }}"
     endpoint = "${server.host}:${server.port}"
 
         [server.ui]
-        host = "http://{{ .Values.prefect.website.service.domainName }}"
-        port = "{{ .Values.prefect.website.service.port | toString }}"
+        host = "http{{ if .Values.ingress.tls }}s{{ end }}://{{ .Values.prefect.website.service.domainName }}"
+        port = "{{ if .Values.ingress.tls }}443{{ else }}80{{ end }}"
         endpoint = "${server.ui.host}:${server.ui.port}"
 
     [cloud]
