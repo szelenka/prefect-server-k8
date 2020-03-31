@@ -74,9 +74,7 @@ minikube addons enable ingress
 
 ## Package and Deploy
 ```bash
-helm package prefect-ui/
-git add prefect-ui-*.tgz
-git commit -am "rolling version"
-helm repo index prefect-ui/ --url https://szelenka.github.io/prefect-ui/
+helm package prefect-ui/ -d ./charts
+helm repo index ./charts/ --url https://szelenka.github.io/prefect-ui/
 cat index.yaml
 ```
