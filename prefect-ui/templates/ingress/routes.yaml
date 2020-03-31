@@ -15,7 +15,7 @@ metadata:
 spec:
   host: {{ .Values.prefect.website.service.domainName | quote }}
   port:
-    targetPort: {{ .Values.prefect.website.service.port }}
+    targetPort: {{ .Values.prefect.website.service.name }}
   tls:
     termination: edge
 {{- if .Values.ingress.tls }}
@@ -52,10 +52,10 @@ metadata:
 spec:
   host: {{ .Values.prefect.apollo.service.domainName | quote }}
   port:
-    targetPort: {{ .Values.prefect.apollo.service.port }}
-{{- if .Values.ingress.tls }}
+    targetPort: {{ .Values.prefect.apollo.service.name }}
   tls:
     termination: edge
+{{- if .Values.ingress.tls }}
     key: {{ .Values.ingress.secrets.key }}
     certificate: {{ .Values.ingress.secrets.cert }}
 {{- end }}
@@ -89,10 +89,10 @@ metadata:
 spec:
   host: {{ .Values.prefect.minio.service.domainName | quote }}
   port:
-    targetPort: {{ .Values.prefect.minio.service.port }}
-{{- if .Values.ingress.tls }}
+    targetPort: {{ .Values.prefect.minio.service.name }}
   tls:
     termination: edge
+{{- if .Values.ingress.tls }}
     key: {{ .Values.ingress.secrets.key }}
     certificate: {{ .Values.ingress.secrets.cert }}
 {{- end }}

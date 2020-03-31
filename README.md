@@ -23,6 +23,10 @@ you'd want to modify these values to protect your installation.
 
 ```yaml
 prefect:
+  minio:
+    # each service can be disabled at installation time
+    # in this case, we're asking it to NOT install MinIO alongside Prefect UI
+    create: false
   postgres:
     secrets:
       # specify the credentials to access Postgres running in a StatefulSet
