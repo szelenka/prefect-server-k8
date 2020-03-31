@@ -1,6 +1,4 @@
 {{- if eq .Values.ingress.type "ingress" -}}
-{{- $fullName := include "prefect-ui.fullname" . -}}
-{{- $svcPort := .Values.prefect.website.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -8,7 +6,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "prefect-ui.fullname" . }}-ingress
   namespace: {{ include "prefect-ui.namespace" . }}
   labels:
     app.kubernetes.io/component: ingress
@@ -23,7 +21,7 @@ spec:
     - hosts:
         - {{ .Values.prefect.website.service.domainName | quote }}
         - {{ .Values.prefect.apollo.service.domainName | quote}}
-      secretName: {{ $fullName }}
+      secretName: {{ include "prefect-ui.fullname" . }}-ingress
 {{- end }}
   rules:
     - host: {{ .Values.prefect.website.service.domainName }}

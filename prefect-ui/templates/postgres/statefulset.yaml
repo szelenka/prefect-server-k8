@@ -3,13 +3,13 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "prefect-ui.name" . }}-postgres
+  name: {{ include "prefect-ui.fullname" . }}-postgres
   namespace: {{ include "prefect-ui.namespace" . }}
   labels:
     app.kubernetes.io/component: postgres
     {{- include "prefect-ui.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "prefect-ui.name" . }}-postgres
+  serviceName: {{ include "prefect-ui.fullname" . }}-postgres
   replicas: 1
   selector:
     matchLabels:
@@ -36,11 +36,11 @@ spec:
           imagePullPolicy: {{ .Values.prefect.postgres.image.pullPolicy }}
           env:
             - name: POSTGRESQL_USER
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_USER } }
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-postgres, key: POSTGRES_USER } }
             - name: POSTGRESQL_PASSWORD
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_PASSWORD } }
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-postgres, key: POSTGRES_PASSWORD } }
             - name: POSTGRESQL_DATABASE
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_DB } }
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-postgres, key: POSTGRES_DB } }
             - name: POSTGRESQL_MIGRATION_IGNORE_ERRORS
               value: "no"
             - name: POSTGRESQL_MAX_CONNECTIONS
@@ -86,7 +86,7 @@ spec:
       volumes:
         - name: configmap-files
           configMap:
-            name: {{ include "prefect-ui.name" . }}-postgres
+            name: {{ include "prefect-ui.fullname" . }}-postgres
     {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

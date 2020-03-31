@@ -48,7 +48,7 @@ spec:
             - name: PREFECT_SERVER_DB_CMD
               value: "prefect-server database upgrade -y"
             - name: PREFECT_SERVER__DATABASE__CONNECTION_URL
-              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: DATABASE_URL } }
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-postgres, key: DATABASE_URL } }
             - name: PREFECT_SERVER__HASURA__ADMIN_SECRET
               valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-hasura, key: ADMIN_SECRET } }
             - name: PREFECT_SERVER__HASURA__HOST

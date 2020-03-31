@@ -29,60 +29,29 @@ helm template minikube-test --debug ./prefect-ui | kubectl apply -f -
 
 ### Validate services are running
 - PersistentVolumeClaim
-    ```bash
-    kubectl get pvc
-  
-    NAME                               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-    postgresdb-prefect-ui-postgres-0   Bound    pvc-e07438ca-a087-4183-990d-1543c47673c3   1Gi        RWO            standard       38m
-    ```
-    - Deployments
-    ```bash
-    kubectl get deployments
-  
-    NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
-    t1-prefect-ui-apollo      0/1     1            0           38s
-    t1-prefect-ui-graphql     0/1     1            0           38s
-    t1-prefect-ui-hasura      1/1     1            1           37s
-    t1-prefect-ui-scheduler   1/1     1            1           37s
-    t1-prefect-ui-ui          0/1     1            0           37s
-    ```
-    - StatefulSets
-    ```bash
-    kubectl get statefulsets
-  
-    NAME                  READY   AGE
-    prefect-ui-postgres   0/1     12s
-    ```
-    - Pods
-    ```bash
-    kubectl get pods
-    NAME                                       READY   STATUS    RESTARTS   AGE
-    prefect-ui-postgres-0                      1/1     Running   0          4m9s
-    t1-prefect-ui-apollo-7f8d9d4b5b-l89wm      1/1     Running   12         27m
-    t1-prefect-ui-graphql-5669955485-hdgbc     1/1     Running   4          5m39s
-    t1-prefect-ui-hasura-6789c9bbb9-m6whg      1/1     Running   2          38m
-    t1-prefect-ui-scheduler-76b9c4c58d-ntc2b   1/1     Running   0          31m
-    t1-prefect-ui-ui-66d788df54-htwkl          1/1     Running   0          16m
-    ```
-    - Services
-    ```bash
-    kubectl get svc
-  
-    NAME                    TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
-    kubernetes              ClusterIP      10.96.0.1        <none>        443/TCP          21m
-    prefect-ui-postgres     ClusterIP      10.103.52.70     <none>        5432/TCP         92s
-    t1-prefect-ui-apollo    NodePort       10.109.182.69    <none>        4200:32289/TCP   92s
-    t1-prefect-ui-graphql   ClusterIP      10.111.171.214   <none>        4201/TCP         92s
-    t1-prefect-ui-hasura    ClusterIP      10.103.58.98     <none>        3000/TCP         92s
-    t1-prefect-ui-ui        LoadBalancer   10.100.120.210   <pending>     8080:31014/TCP   92s
-    ```
-    - Ingress
-    ```bash
-    kubectl get ingress
-    
-    NAME               CLASS    HOSTS                             ADDRESS   PORTS   AGE
-    t1-prefect-ui      <none>   prefect.local,api.prefect.local             80      66s
-    ```
+```bash
+kubectl get pvc
+```
+- Deployments
+```bash
+kubectl get deployments
+```
+- StatefulSets
+```bash
+kubectl get statefulsets
+```
+- Pods
+```bash
+kubectl get pods
+```
+- Services
+```bash
+kubectl get svc
+```
+- Ingress
+```bash
+kubectl get ingress
+```
 
 ### DNS issues
 Running on a Mac with Umbrella DNS installed, you'll need to start minikube directing to that Docker Desktop's vpnkit.
