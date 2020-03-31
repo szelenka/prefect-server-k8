@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-agent
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: agent
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.prefect.agent.replicas.minReplicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: agent
+      {{- include "prefect-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: agent
+        {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "prefect-ui.fullname" . }}-agent
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-apollo
+          image: busybox:1.28
+          command:
+          - sh
+          - '-c'
+          - 'until nslookup {{ include "prefect-ui.fullname" . }}-apollo.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.fullname" . }}-apollo; sleep 2; done'
+      containers:
+        - name: agent
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.prefect.agent.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prefect.agent.image.pullPolicy }}
+          command:
+          - /bin/bash
+          - '-c'
+          args:
+          - "prefect agent start kubernetes"
+            {{- with .Values.prefect.agent.environment }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          env:
+            - name: PREFECT__CLOUD__AGENT__AUTH_TOKEN
+              value: ""
+            - name: PREFECT__CLOUD__API
+              value: 'http://{{ include "prefect-ui.fullname" . }}-apollo:{{ .Values.prefect.apollo.service.port }}'
+            - name: NAMESPACE
+              value: {{ include "prefect-ui.namespace" . }}
+            - name: IMAGE_PULL_SECRETS
+              value: ""
+            - name: PREFECT__CLOUD__AGENT__LABELS
+              value: "[]"
+            - name: JOB_MEM_REQUEST
+              value: {{ .Values.prefect.agent.job_resources.requests.memory }}
+            - name: JOB_MEM_LIMIT
+              value: {{ .Values.prefect.agent.job_resources.limits.memory }}
+            - name: JOB_CPU_REQUEST
+              value: {{ .Values.prefect.agent.job_resources.requests.cpu }}
+            - name: JOB_CPU_LIMIT
+              value: {{ .Values.prefect.agent.job_resources.limits.cpu }}
+          livenessProbe:
+            exec:
+              command:
+              - python
+              - -c
+              - from prefect.agent.kubernetes.agent import check_heartbeat; check_heartbeat()
+            initialDelaySeconds: 40
+            periodSeconds: 40
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 2
+          resources:
+            {{- toYaml .Values.prefect.agent.resources | nindent 12 }}
+        - name: resource-manager
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.prefect.agent.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prefect.agent.image.pullPolicy }}
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - python -c 'from prefect.agent.kubernetes import ResourceManager; ResourceManager().start()'
+          env:
+            - name: PREFECT__CLOUD__AGENT__AUTH_TOKEN
+              value: ""
+            - name: PREFECT__CLOUD__API
+              value: 'http://{{ include "prefect-ui.fullname" . }}-apollo:{{ .Values.prefect.apollo.service.port }}'
+            - name: PREFECT__CLOUD__AGENT__RESOURCE_MANAGER__LOOP_INTERVAL
+              value: '60'
+            - name: NAMESPACE
+              value: {{ include "prefect-ui.namespace" . }}
+          resources:
+            {{- toYaml .Values.prefect.agent.resources | nindent 12 }}
+      volumes: []
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

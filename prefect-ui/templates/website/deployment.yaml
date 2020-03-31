@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-website
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: website
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.prefect.website.replicas.minReplicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: website
+      {{- include "prefect-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: website
+        {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "prefect-ui.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-apollo
+          image: busybox:1.28
+          command:
+          - sh
+          - '-c'
+          - 'until nslookup {{ include "prefect-ui.fullname" . }}-apollo.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.fullname" . }}-apollo; sleep 2; done'
+      containers:
+        - name: nginx
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.prefect.website.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prefect.website.image.pullPolicy }}
+          command:
+          - /docker-entrypoint.sh
+#          - nginx
+#          - '-g'
+#          - daemon off;
+#          - '-c'
+#          - /etc/nginx/conf.d/default.conf
+          env:
+            - name: VUE_APP_GRAPHQL_HTTP
+              # TODO: does this overwrite this value:
+              #  https://github.com/PrefectHQ/prefect/blob/master/server/src/prefect_server/cli/services.py#L73
+#              value: 'http://{{ include "prefect-ui.fullname" . }}-apollo:{{ .Values.prefect.apollo.service.port }}/graphql'
+              value: 'https://{{ .Values.prefect.apollo.service.domainName }}/graphql'
+            - name: PREFECT_SERVER__APOLLO__HOST
+#              value: '{{ include "prefect-ui.fullname" . }}-apollo:{{ .Values.prefect.apollo.service.port }}'
+              value: '{{ .Values.prefect.apollo.service.domainName }}'
+            {{- with .Values.prefect.website.environment }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: {{ .Values.prefect.website.service.name }}
+              containerPort: {{ .Values.prefect.website.service.port }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.prefect.website.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.prefect.website.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - name: configmap-files
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: website_nginx.conf
+            - name: configmap-files
+              mountPath: /docker-entrypoint.sh
+              subPath: website_entrypoint.sh
+            - name: configmap-files
+              mountPath: /var/www/backend.toml
+              subPath: backend.toml
+          resources:
+            {{- toYaml .Values.prefect.website.resources | nindent 12 }}
+      volumes:
+        - name: configmap-files
+          configMap:
+            name: {{ include "prefect-ui.fullname" . }}-website
+            defaultMode: 0777
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

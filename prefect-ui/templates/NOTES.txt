@@ -1,0 +1,69 @@
+Thank you for installing Prefect-UI!
+
+Your release is named "{{ .Release.Name }}" and installed into the namespace "{{ include "prefect-ui.namespace" . }}".
+
+You can find if the UI is ready by doing:
+
+  kubectl --namespace={{ include "prefect-ui.namespace" . }} get pod
+
+and watching for both these pods to be in the status 'Running'.
+
+You can find the public IP of the Prefect-UI by doing:
+
+  {{- if .Values.ingress.enabled }}
+  {{- range $host := .Values.ingress.hosts }}
+    {{- range .paths }}
+    http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}
+    {{- end }}
+  {{- end }}
+  {{- else if contains "NodePort" .Values.prefect.website.service.type }}
+    export NODE_PORT=$(kubectl get --namespace {{ include "prefect-ui.namespace" . }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "prefect-ui.fullname" . }})
+    export NODE_IP=$(kubectl get nodes --namespace {{ include "prefect-ui.namespace" . }} -o jsonpath="{.items[0].status.addresses[0].address}")
+    echo http://$NODE_IP:$NODE_PORT
+  {{- else if contains "LoadBalancer" .Values.prefect.website.service.type }}
+       NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+             You can watch the status of by running 'kubectl get --namespace {{ include "prefect-ui.namespace" . }} svc -w {{ include "prefect-ui.fullname" . }}'
+    export SERVICE_IP=$(kubectl get svc --namespace {{ include "prefect-ui.namespace" . }} {{ include "prefect-ui.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+    echo http://$SERVICE_IP:{{ .Values.service.port }}
+  {{- else if contains "ClusterIP" .Values.prefect.website.service.type }}
+    export POD_NAME=$(kubectl get pods --namespace {{ include "prefect-ui.namespace" . }} -l "app.kubernetes.io/name={{ include "prefect-ui.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+    echo "Visit http://127.0.0.1:8080 to use your application"
+    kubectl --namespace {{ include "prefect-ui.namespace" . }} port-forward $POD_NAME 8080:80
+  {{- end }}
+
+
+If might take a few minutes for it to appear!
+
+Here's a basic description of the service dependencies:
+
+    Browser -> Website -> Apollo -> GraphQL -> Hasura -> Postgres
+
+# Website
+Basic nginx server hosting Vue components for the UI
+https://github.com/PrefectHQ/prefect/tree/master/server/services/ui
+
+# Scheduler
+AsyncIO loop that queries via GraphQL for Prefect Flows that need to run, and triggers the Flow Runs.
+https://github.com/PrefectHQ/prefect/blob/master/server/src/prefect_server/services/scheduler/scheduler.py
+
+# Apollo
+This is Prefect's externally accessable GraphQL service.
+It's responsible for stitching the other GraphQL schemas together and provides an entrypoint to Prefect Server.
+https://github.com/PrefectHQ/prefect/blob/master/server/services/apollo/
+
+# GraphQL
+Starlette wrapper around custom GraphQL queries for Prefect's API.
+https://github.com/PrefectHQ/prefect/blob/master/server/src/prefect_server/services/graphql/server.py
+
+# Hasura
+Instant realtime GraphQL APIs on PostgreSQL along with Alembic migrations
+https://hasura.io/
+
+# Postgres
+Open source object-relational database
+https://www.postgresql.org/
+
+Note that this is still and alpha release! If you have questions, feel free to
+  1. Read the guide at https://docs.prefect.io/
+  2. Chat with us at https://prefect-community.slack.com/
+  3. File issues at https://github.com/PrefectHQ/prefect

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-website
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: website
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.prefect.website.service.type }}
+  ports:
+    - port: {{ .Values.prefect.website.service.port }}
+      targetPort: {{ .Values.prefect.website.service.name }}
+      protocol: TCP
+      name: {{ .Values.prefect.website.service.name }}
+  selector:
+    app.kubernetes.io/component: website
+    {{- include "prefect-ui.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-graphql
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: graphql
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.prefect.graphql.replicas.minReplicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: graphql
+      {{- include "prefect-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: graphql
+        {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "prefect-ui.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-hasura
+          image: busybox:1.28
+          command:
+          - sh
+          - '-c'
+          - 'until nslookup {{ include "prefect-ui.fullname" . }}-hasura.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.fullname" . }}-hasura; sleep 2; done'
+      containers:
+        - name: graphql
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.prefect.graphql.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prefect.graphql.image.pullPolicy }}
+          command:
+          - bash
+          - '-c'
+          - "${PREFECT_SERVER_DB_CMD} && python src/prefect_server/services/graphql/server.py"
+          env:
+            - name: POD_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: PREFECT_SERVER_DB_CMD
+              value: "prefect-server database upgrade -y"
+            - name: PREFECT_SERVER__DATABASE__CONNECTION_URL
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: DATABASE_URL } }
+            - name: PREFECT_SERVER__HASURA__ADMIN_SECRET
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-hasura, key: ADMIN_SECRET } }
+            - name: PREFECT_SERVER__HASURA__HOST
+              value: '{{ include "prefect-ui.fullname" . }}-hasura'
+            {{- with .Values.prefect.graphql.environment }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: {{ .Values.prefect.hasura.service.name }}
+              containerPort: {{ .Values.prefect.graphql.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: {{ .Values.prefect.graphql.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.prefect.graphql.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.prefect.graphql.resources | nindent 12 }}
+      volumes: []
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+

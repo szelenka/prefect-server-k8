@@ -1,0 +1,55 @@
+{{- if eq .Values.ingress.type "route" -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-website
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: website
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.prefect.website.service.domainName | quote }}
+  port:
+    targetPort: {{ .Values.prefect.website.service.port }}
+  tls:
+    termination: edge
+{{- if .Values.ingress.tls }}
+    key: {{ .Values.ingress.secrets.key }}
+    certificate: {{ .Values.ingress.secrets.cert }}
+{{- end }}
+  to:
+    kind: Service
+    name: {{ include "prefect-ui.fullname" . }}-website
+    weight: 100
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-apollo
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: apollo
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.prefect.apollo.service.domainName | quote }}
+  port:
+    targetPort: {{ .Values.prefect.apollo.service.port }}
+{{- if .Values.ingress.tls }}
+  tls:
+    termination: edge
+    key: {{ .Values.ingress.secrets.key }}
+    certificate: {{ .Values.ingress.secrets.cert }}
+{{- end }}
+  to:
+    kind: Service
+    name: {{ include "prefect-ui.fullname" . }}-apollo
+    weight: 100
+{{- end }}

@@ -1,0 +1,22 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-agent
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: agent
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - batch
+  - extensions
+  resources:
+  - jobs
+  verbs:
+  - '*'
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - '*'

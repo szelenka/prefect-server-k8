@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-website
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: website
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+data:
+  backend.toml: |-
+    # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/config.toml
+
+    backend = "server"
+
+    [server]
+    host = "http://{{ .Values.prefect.apollo.service.domainName }}"
+    port = "{{ .Values.prefect.apollo.service.port | toString }}"
+    endpoint = "${server.host}:${server.port}"
+
+        [server.ui]
+        host = "http://{{ .Values.prefect.website.service.domainName }}"
+        port = "{{ .Values.prefect.website.service.port | toString }}"
+        endpoint = "${server.ui.host}:${server.ui.port}"
+
+    [cloud]
+    # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/agent/docker/agent.py#L384
+    # config.cloud.api seems to be hardcoded to use host.docker.internal on port 4200 for
+    api = "${${backend}.endpoint}"
+    endpoint = "${cloud.api}"
+    graphql = "${cloud.api}/graphql/alpha"
+  {{- (.Files.Glob "files/configmap/website*").AsConfig | nindent 2 }}

@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-agent
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: agent
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "prefect-ui.fullname" . }}-agent
+subjects:
+- kind: ServiceAccount
+  name: {{ include "prefect-ui.fullname" . }}-agent

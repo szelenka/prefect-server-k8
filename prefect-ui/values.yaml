@@ -1,0 +1,190 @@
+# Default values for prefect-ui-kubernetes.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+prefect:
+  agent:
+    image:
+      repository: prefecthq/prefect
+      pullPolicy: Always
+    replicas:
+      minReplicas: 1
+      maxReplicas: 1
+      targetCPUUtilizationPercentage: 80
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    job_resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+  website:
+    image:
+      repository: prefecthq/ui
+      pullPolicy: Always
+    service:
+      domainName: prefect.local
+      name: http
+      type: NodePort
+      port: 8080
+    replicas:
+      minReplicas: 1
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+    resources: {}
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+  scheduler:
+    image:
+      repository: prefecthq/server
+      pullPolicy: Always
+    service: {}
+    replicas:
+      minReplicas: 1
+      maxReplicas: 1
+      targetCPUUtilizationPercentage: 80
+    resources: {}
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+  apollo:
+    image:
+      repository: prefecthq/apollo
+      pullPolicy: Always
+    environment: {}
+    service:
+      domainName: api.prefect.local
+      name: graphql
+      type: NodePort
+      port: 4200
+    replicas:
+      minReplicas: 1
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+    resources: {}
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+  graphql:
+    image:
+      repository: prefecthq/server
+      pullPolicy: Always
+    service:
+      name: graphql
+      type: ClusterIP
+      port: 4201
+    replicas:
+      minReplicas: 1
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+    resources: {}
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+  hasura:
+    image:
+      repository: hasura/graphql-engine:v1.1.0
+      pullPolicy: IfNotPresent
+    service:
+      name: graphql
+      type: ClusterIP
+      port: 3000
+    replicas:
+      minReplicas: 1
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+    resources: {}
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+    secrets:
+      adminSecret: hasura-secret-admin-secret
+  postgres:
+    image:
+      repository: centos/postgresql-12-centos7:latest
+      pullPolicy: IfNotPresent
+    service:
+      name: postgres
+      type: ClusterIP
+      port: 5432
+    resources: {}
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
+    secrets:
+      username: prefect
+      password: test-password
+      database: prefect_server
+    volume:
+      storage: "1Gi"
+      accessModes: ReadWriteOnce
+      mounts:
+        name: pvc
+        mountPoint: /var/lib/pgsql/data
+        subPath: pgdata
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+ingress:
+  # 'ingress' = Kubernetes Ingress
+  # 'route' = OpenShift Route
+  type: ingress
+  annotations: {}
+  tls: false
+  secrets:
+    cert: ""
+    key: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

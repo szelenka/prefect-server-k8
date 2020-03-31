@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-hasura
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: hasura
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.prefect.hasura.service.type }}
+  ports:
+    - port: {{ .Values.prefect.hasura.service.port }}
+      targetPort: {{ .Values.prefect.hasura.service.name }}
+      protocol: TCP
+      name: {{ .Values.prefect.hasura.service.name }}
+  selector:
+    app.kubernetes.io/component: hasura
+    {{- include "prefect-ui.selectorLabels" . | nindent 4 }}

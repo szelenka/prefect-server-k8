@@ -1,0 +1,14 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-website
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: website
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: {{ include "prefect-ui.fullname" . }}-website
+  {{- toYaml .Values.prefect.website.replicas | nindent 2 }}

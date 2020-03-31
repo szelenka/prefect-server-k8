@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prefect-ui.fullname" . }}-scheduler
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: scheduler
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: scheduler
+      {{- include "prefect-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: scheduler
+        {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "prefect-ui.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-graphql
+          image: busybox:1.28
+          command:
+          - sh
+          - '-c'
+          - 'until nslookup {{ include "prefect-ui.fullname" . }}-graphql.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.fullname" . }}-graphql; sleep 2; done'
+      containers:
+        - name: scheduler
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.prefect.scheduler.image.repository }}:{{ .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.prefect.scheduler.image.pullPolicy }}
+          command:
+          - "python"
+          - "src/prefect_server/services/scheduler/scheduler.py"
+          env:
+            - name: PREFECT_SERVER__HASURA__ADMIN_SECRET
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.fullname" . }}-hasura, key: ADMIN_SECRET } }
+            - name: PREFECT_SERVER__HASURA__HOST
+              value: '{{ include "prefect-ui.fullname" . }}-hasura'
+            {{- with .Values.prefect.scheduler.environment }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+#          ports:
+#            - name: http
+#              containerPort: {{ .Values.prefect.scheduler.service.port }}
+#              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml .Values.prefect.scheduler.resources | nindent 12 }}
+      volumes: []
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

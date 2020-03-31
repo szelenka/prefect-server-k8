@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "prefect-ui.name" . }}-postgres
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: postgres
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.prefect.postgres.service.type }}
+  ports:
+    - port: {{ .Values.prefect.postgres.service.port }}
+      targetPort: {{ .Values.prefect.postgres.service.name }}
+      protocol: TCP
+      name: {{ .Values.prefect.postgres.service.name }}
+  selector:
+    app.kubernetes.io/component: postgres
+    {{- include "prefect-ui.selectorLabels" . | nindent 4 }}

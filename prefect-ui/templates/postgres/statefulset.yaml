@@ -1,0 +1,110 @@
+# ref: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
+# ref: https://hub.docker.com/r/centos/postgresql-10-centos7
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "prefect-ui.name" . }}-postgres
+  namespace: {{ include "prefect-ui.namespace" . }}
+  labels:
+    app.kubernetes.io/component: postgres
+    {{- include "prefect-ui.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "prefect-ui.name" . }}-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: postgres
+      {{- include "prefect-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: postgres
+        {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "prefect-ui.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: postgres
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.prefect.postgres.image.repository }}"
+          imagePullPolicy: {{ .Values.prefect.postgres.image.pullPolicy }}
+          env:
+            - name: POSTGRESQL_USER
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_USER } }
+            - name: POSTGRESQL_PASSWORD
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_PASSWORD } }
+            - name: POSTGRESQL_DATABASE
+              valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-postgres, key: POSTGRES_DB } }
+            - name: POSTGRESQL_MIGRATION_IGNORE_ERRORS
+              value: "no"
+            - name: POSTGRESQL_MAX_CONNECTIONS
+              value: "150"
+            - name: POSTGRESQL_MAX_PREPARED_TRANSACTIONS
+              value: "0"
+            - name: POSTGRESQL_SHARED_BUFFERS
+              value: 32MB
+            - name: POSTGRESQL_EFFECTIVE_CACHE_SIZE
+              value: 128MB
+            {{- with .Values.prefect.postgres.environment }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: {{ .Values.prefect.postgres.service.name }}
+              containerPort: {{ .Values.prefect.postgres.service.port }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.prefect.postgres.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.prefect.postgres.service.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - name: configmap-files
+              mountPath: /opt/app-root/src/postgresql-start/postgres_setup_database.sh
+              subPath: postgres_setup_database.sh
+            - name: postgresdb
+              mountPath: {{ .Values.prefect.postgres.volume.mounts.mountPoint }}
+              subPath: {{ .Values.prefect.postgres.volume.mounts.subPath }}
+          resources:
+            {{- toYaml .Values.prefect.postgres.resources | nindent 12 }}
+      volumes:
+        - name: configmap-files
+          configMap:
+            name: {{ include "prefect-ui.name" . }}-postgres
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresdb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+#      storageClassName: gp2
+      resources:
+        requests:
+          storage: 1Gi
