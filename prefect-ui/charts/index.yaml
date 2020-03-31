@@ -1,0 +1,46 @@
+apiVersion: v1
+entries:
+  prefect-ui:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2020-03-31T18:09:41.538363-04:00"
+    description: A Helm chart to run Prefect UI on Kubernetes
+    digest: 08919266af633d09c17709f436e6f6ed959d4436585ebc233507046dd5de02d7
+    home: https://github.com/szelenka/prefect-ui
+    icon: https://d33wubrfki0l68.cloudfront.net/452d2a3c0b72872c8a55dcc952543252684f2d33/567cd/assets/img/prefect-logo-full-flat-white.196a5c8b.svg
+    keywords:
+    - python
+    - prefect
+    - prefect-ui
+    maintainers:
+    - email: https://github.com/szelenka
+      name: Scott Zelenka
+    name: prefect-ui
+    sources:
+    - https://github.com/szelenka/prefect-ui
+    type: application
+    urls:
+    - https://szelenka.github.io/prefect-ui/prefect-ui-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: latest
+    created: "2020-03-31T18:09:41.537185-04:00"
+    description: A Helm chart to run Prefect UI on Kubernetes
+    digest: b76847c39f7448e93898dcf7838185dc3502536288e92b4d445762d08a118873
+    home: https://github.com/szelenka/prefect-ui
+    icon: https://d33wubrfki0l68.cloudfront.net/452d2a3c0b72872c8a55dcc952543252684f2d33/567cd/assets/img/prefect-logo-full-flat-white.196a5c8b.svg
+    keywords:
+    - python
+    - prefect
+    - prefect-ui
+    maintainers:
+    - email: https://github.com/szelenka
+      name: Scott Zelenka
+    name: prefect-ui
+    sources:
+    - https://github.com/szelenka/prefect-ui
+    type: application
+    urls:
+    - https://szelenka.github.io/prefect-ui/prefect-ui-0.0.1.tgz
+    version: 0.0.1
+generated: "2020-03-31T18:09:41.535278-04:00"
