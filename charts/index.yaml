@@ -3,7 +3,7 @@ entries:
   prefect-ui:
   - apiVersion: v2
     appVersion: latest
-    created: "2020-03-31T18:33:51.38871-04:00"
+    created: "2020-03-31T18:35:07.768413-04:00"
     description: A Helm chart to run Prefect UI on Kubernetes
     digest: cb55f69095585e57b8d5d909f2fb1fa0abba5c6352b49e579310e4e8218151d5
     home: https://github.com/szelenka/prefect-ui
@@ -20,11 +20,11 @@ entries:
     - https://github.com/szelenka/prefect-ui
     type: application
     urls:
-    - https://szelenka.github.io/prefect-ui/prefect-ui-0.0.2.tgz
+    - https://szelenka.github.io/prefect-ui/charts/prefect-ui-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v2
     appVersion: latest
-    created: "2020-03-31T18:33:51.387612-04:00"
+    created: "2020-03-31T18:35:07.767117-04:00"
     description: A Helm chart to run Prefect UI on Kubernetes
     digest: b76847c39f7448e93898dcf7838185dc3502536288e92b4d445762d08a118873
     home: https://github.com/szelenka/prefect-ui
@@ -41,6 +41,6 @@ entries:
     - https://github.com/szelenka/prefect-ui
     type: application
     urls:
-    - https://szelenka.github.io/prefect-ui/prefect-ui-0.0.1.tgz
+    - https://szelenka.github.io/prefect-ui/charts/prefect-ui-0.0.1.tgz
     version: 0.0.1
-generated: "2020-03-31T18:33:51.385731-04:00"
+generated: "2020-03-31T18:35:07.764511-04:00"
