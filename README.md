@@ -27,6 +27,8 @@ prefect:
       username: my_unique_username
       password: my_secret_password
       database: my_custom_database_name
+    volume:
+      storage: "1Gi"
   hasura:
     secrets:
       adminSecret: my_secret_admin_password
@@ -57,5 +59,5 @@ ingress:
 
 Then create the services with your custom values:
 ```bash
-helm install prefect-ui/prefect-ui --name=prefect-ui -f my-custom-values.yaml
+helm install -f my-custom-values.yaml instance-name prefect-ui 
 ```
