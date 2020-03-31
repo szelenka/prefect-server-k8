@@ -71,7 +71,7 @@ common variables to adjust.
 
 Then create the services with your custom values:
 ```bash
-helm install -f my-custom-values.yaml instance-name prefect-ui 
+helm install -f my-custom-values.yaml instance-name prefect-ui/prefect-ui
 ```
 
 ## How to register Prefect Flows to this instance
