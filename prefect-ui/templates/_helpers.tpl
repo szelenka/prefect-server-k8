@@ -64,6 +64,17 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Create the name of the agent service account to use
+*/}}
+{{- define "prefect-ui.agentServiceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (printf "%s-agent" (include "prefect-ui.fullname" .)) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the namespace to use
 # TODO: hack for https://github.com/helm/helm/issues/6794
 */}}
