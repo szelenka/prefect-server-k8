@@ -30,7 +30,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-postgres
-          image: busybox:1.28
+          image: {{ .Values.prefect.busybox.image.repository }}
           command:
           - sh
           - '-c'

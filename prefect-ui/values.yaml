@@ -3,6 +3,9 @@
 # Declare variables to be passed into your templates.
 
 prefect:
+  busybox:
+    image:
+      repository: busybox:1.28
   agent:
     image:
       repository: prefecthq/prefect
