@@ -23,8 +23,6 @@ data:
         endpoint = "${server.ui.host}:${server.ui.port}"
 
     [cloud]
-    # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/agent/docker/agent.py#L384
-    # config.cloud.api seems to be hardcoded to use host.docker.internal on port 4200 for
     api = "${${backend}.endpoint}"
     endpoint = "${cloud.api}"
     graphql = "${cloud.api}/graphql/alpha"

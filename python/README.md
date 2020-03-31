@@ -17,7 +17,7 @@ to revert back to the default by removing this file from your system:
 rm ~/.prefect/backend.toml
 ```
 
-The contents of this file are:
+The contents of this file are generated at the time this Helm Chart generates the Kubernetes manifest files:
 ```yaml
 # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/config.toml
 
@@ -34,8 +34,6 @@ endpoint = "${server.host}:${server.port}"
     endpoint = "${server.ui.host}:${server.ui.port}"
 
 [cloud]
-# https://github.com/PrefectHQ/prefect/blob/master/src/prefect/agent/docker/agent.py#L384
-# config.cloud.api seems to be hardcoded to use host.docker.internal on port 4200 for
 api = "${${backend}.endpoint}"
 endpoint = "${cloud.api}"
 graphql = "${cloud.api}/graphql/alpha"
