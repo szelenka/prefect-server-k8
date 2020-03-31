@@ -155,13 +155,13 @@ prefect:
       storage: "1Gi"
       accessModes: ReadWriteOnce
       mounts:
-        name: pvc
+        name: postgres-db
         mountPoint: /var/lib/pgsql/data
         subPath: pgdata
   minio:
     create: false
     image:
-      repository: centos/postgresql-12-centos7:latest
+      repository: minio/minio:RELEASE.2020-03-05T01-04-19Z
       pullPolicy: IfNotPresent
     service:
       domainName: minio.prefect.local
@@ -182,9 +182,9 @@ prefect:
       storage: "1Gi"
       accessModes: ReadWriteOnce
       mounts:
-        name: pvc
-        mountPoint: /var/lib/pgsql/data
-        subPath: pgdata
+        name: minio-db
+        mountPoint: /data
+        subPath: data
 
 imagePullSecrets: []
 nameOverride: ""

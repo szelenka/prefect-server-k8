@@ -33,6 +33,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.prefect.minio.image.repository }}"
           imagePullPolicy: {{ .Values.prefect.minio.image.pullPolicy }}
+          args:
+          - server
+          - {{ .Values.prefect.minio.volume.mounts.mountPoint }}
           env:
             - name: MINIO_ACCESS_KEY
               valueFrom: { secretKeyRef: { name: {{ include "prefect-ui.name" . }}-minio, key: MINIO_ACCESS_KEY } }
@@ -62,12 +65,12 @@ spec:
             successThreshold: 1
             failureThreshold: 3
           volumeMounts:
+            # TODO: customize minio config?
             - name: configmap-files
-              mountPath: /opt/app-root/src/postgresql-start/postgres_setup_database.sh
-              subPath: postgres_setup_database.sh
-            - name: postgresdb
-              mountPath: {{ .Values.prefect.postgres.volume.mounts.mountPoint }}
-              subPath: {{ .Values.prefect.postgres.volume.mounts.subPath }}
+              mountPath: /opt/configmap
+            - name: minio-db
+              mountPath: {{ .Values.prefect.minio.volume.mounts.mountPoint }}
+              subPath: {{ .Values.prefect.minio.volume.mounts.subPath }}
           resources:
             {{- toYaml .Values.prefect.minio.resources | nindent 12 }}
       volumes:

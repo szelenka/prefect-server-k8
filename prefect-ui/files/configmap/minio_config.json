@@ -1,0 +1,16 @@
+{
+  "Version": "2019-07-01",
+  "Statement": [
+    {
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:s3:::collector-view/*",
+        "arn:aws:s3:::customer-view/*"
+      ],
+      "Sid": ""
+    }
+  ]
+}
