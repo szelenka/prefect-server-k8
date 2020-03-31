@@ -6,7 +6,7 @@ This repository contains a Helm Chart for deploying the Prefect UI to Kubernetes
 
 First you'll need to add this repository to helm:
 ```bash
-helm repo add prefect-ui https://szelenka.github.io/prefect-ui/charts
+helm repo add prefect-ui https://szelenka.github.io/prefect-ui/prefect-ui/charts
 ```
 
 It should now show up on your system:
@@ -14,7 +14,7 @@ It should now show up on your system:
 helm repo list
 
 NAME            URL                                        
-prefect-ui      https://szelenka.github.io/prefect-ui/charts
+prefect-ui      https://szelenka.github.io/prefect-ui/prefect-ui/charts
 ```
 
 The last step is to perform an installation. In most cases you'll likely want to review the

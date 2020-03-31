@@ -20,7 +20,7 @@ entries:
     - https://github.com/szelenka/prefect-ui
     type: application
     urls:
-    - https://szelenka.github.io/prefect-ui/prefect-ui-0.0.2.tgz
+    - https://szelenka.github.io/prefect-ui/prefect-ui/charts/prefect-ui-0.0.2.tgz
     version: 0.0.2
   - apiVersion: v2
     appVersion: latest
@@ -41,6 +41,6 @@ entries:
     - https://github.com/szelenka/prefect-ui
     type: application
     urls:
-    - https://szelenka.github.io/prefect-ui/prefect-ui-0.0.1.tgz
+    - https://szelenka.github.io/prefect-ui/prefect-ui/charts/prefect-ui-0.0.1.tgz
     version: 0.0.1
 generated: "2020-03-31T18:09:41.535278-04:00"
