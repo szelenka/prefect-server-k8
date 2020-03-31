@@ -73,3 +73,7 @@ Then create the services with your custom values:
 ```bash
 helm install -f my-custom-values.yaml instance-name prefect-ui 
 ```
+
+## How to register Prefect Flows to this instance
+
+See the [python](./python) folder for an example and details.
