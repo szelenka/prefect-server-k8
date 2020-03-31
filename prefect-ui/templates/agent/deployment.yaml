@@ -22,7 +22,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: {{ include "prefect-ui.fullname" . }}-agent
+      serviceAccountName: {{- if .Values.serviceAccount.create -}}{{ include "prefect-ui.fullname" . }}-agent{{ else }}{{ default "default" .Values.serviceAccount.name }}{{- end -}}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:

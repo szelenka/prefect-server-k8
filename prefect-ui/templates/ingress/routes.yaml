@@ -25,6 +25,14 @@ spec:
     kind: Service
     name: {{ include "prefect-ui.fullname" . }}-website
     weight: 100
+status:
+  ingress:
+  - conditions:
+    - status: "True"
+      type: Admitted
+    host: null
+    routerName: null
+    wildcardPolicy: None
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -52,4 +60,12 @@ spec:
     kind: Service
     name: {{ include "prefect-ui.fullname" . }}-apollo
     weight: 100
+status:
+  ingress:
+  - conditions:
+    - status: "True"
+      type: Admitted
+    host: null
+    routerName: null
+    wildcardPolicy: None
 {{- end }}

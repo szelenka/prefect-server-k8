@@ -164,12 +164,17 @@ serviceAccount:
 
 podSecurityContext: {}
   # fsGroup: 2000
+  # seLinuxOptions:
+  #   level: 's0:c107,c29'
 
 securityContext: {}
   # capabilities:
   #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
+  #     - KILL
+  #     - MKNOD
+  #     - SETGID
+  #     - SETUID
+  # readOnlyRootFilesystem: false
   # runAsNonRoot: true
   # runAsUser: 1000
 
