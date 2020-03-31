@@ -19,30 +19,39 @@ prefect-ui      https://szelenka.github.io/prefect-ui
 
 The last step is to perform an installation. In most cases you'll likely want to review the
 [values.yaml](./prefect-ui/values.yaml) to create your customizations during creation. Generally, 
-you'd want to modify these values to protect your installation:
+you'd want to modify these values to protect your installation.
+
 ```yaml
 prefect:
   postgres:
     secrets:
+      # specify the credentials to access Postgres running in a StatefulSet
       username: my_unique_username
       password: my_secret_password
       database: my_custom_database_name
     volume:
+      # specify how much persistent storage to give Postgres
       storage: "1Gi"
   hasura:
     secrets:
+      # specify the credentials for Hasura
       adminSecret: my_secret_admin_password
   apollo:
     service:
+      # specify the externally accessable fully-qualified domain name to access the GraphQL API
       domainName: domain-for-api.local
   website:
     service:
+      # specify the externally accessable fully-qualified domain name to access the Vue UI
       domainName: domain-for-user-interface.local
 
 ingress:
+  # is this a Kubernetes 'Ingress' or OpenShift 'Route'?
   type: ingress || route
+  # do you want TLS on the Ingress/Route?
   tls: true
   secrets:
+    # if you want to access the Website and API through HTTPS, specify the certs
     cert: |-
       -----BEGIN CERTIFICATE-----
       MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDB5AVkGh0KVs/6
@@ -56,6 +65,9 @@ ingress:
       5jRdWWab5Zc2sXy96aeXBA==
       -----END PRIVATE KEY-----
 ```
+
+You can modify any of the values in the [values.yaml](./prefect-ui/values.yaml) this way, but the above would be the most 
+common variables to adjust.
 
 Then create the services with your custom values:
 ```bash
