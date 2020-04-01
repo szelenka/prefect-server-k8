@@ -1,4 +1,4 @@
-{{ if .Values.prefect.postgres.create }}
+{{ if eq .Values.prefect.postgres.create true }}
 # ref: https://kubernetes.io/docs/tasks/run-application/run-replicated-stateful-application/
 # ref: https://hub.docker.com/r/centos/postgresql-10-centos7
 apiVersion: apps/v1

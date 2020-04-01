@@ -1,4 +1,4 @@
-{{ if .Values.prefect.website.create }}
+{{ if eq .Values.prefect.website.create true }}
 apiVersion: v1
 kind: Service
 metadata:

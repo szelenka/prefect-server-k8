@@ -10,7 +10,7 @@ and watching for both these pods to be in the status 'Running'.
 
 You can find the public IP of the Prefect-UI by doing:
 
-  {{- if .Values.ingress.enabled }}
+  {{- if eq .Values.ingress.enabled true }}
   {{- range $host := .Values.ingress.hosts }}
     {{- range .paths }}
     http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}

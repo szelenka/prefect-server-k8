@@ -1,4 +1,4 @@
-{{ if .Values.prefect.agent.create }}
+{{ if eq .Values.prefect.agent.create true }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

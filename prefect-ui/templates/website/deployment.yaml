@@ -1,4 +1,4 @@
-{{ if .Values.prefect.website.create }}
+{{ if eq .Values.prefect.website.create true }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,13 +48,10 @@ spec:
 #          - /etc/nginx/conf.d/default.conf
           env:
             - name: VUE_APP_GRAPHQL_HTTP
-              # TODO: does this overwrite this value:
+              # TODO: hack, since this is just serving files via nginx, it doesn't read this environment at run-time
+              #  so we need the docker-entrypoint.sh to do string substitution for us:
               #  https://github.com/PrefectHQ/prefect/blob/master/server/src/prefect_server/cli/services.py#L73
-#              value: 'http://{{ include "prefect-ui.fullname" . }}-apollo:{{ .Values.prefect.apollo.service.port }}/graphql'
-              value: 'https://{{ .Values.prefect.apollo.service.domainName }}/graphql'
-            - name: PREFECT_SERVER__APOLLO__HOST
-#              value: '{{ include "prefect-ui.fullname" . }}-apollo:{{ .Values.prefect.apollo.service.port }}'
-              value: '{{ .Values.prefect.apollo.service.domainName }}'
+              value: 'http{{if eq .Values.ingress.tls true }}s{{ end }}://{{ .Values.prefect.apollo.service.domainName }}/graphql'
             {{- with .Values.prefect.website.environment }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

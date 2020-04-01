@@ -1,4 +1,4 @@
-{{ if .Values.prefect.minio.create }}
+{{ if eq .Values.prefect.minio.create true }}
 apiVersion: v1
 kind: Service
 metadata:

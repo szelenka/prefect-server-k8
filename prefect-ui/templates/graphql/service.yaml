@@ -1,4 +1,4 @@
-{{ if .Values.prefect.graphql.create }}
+{{ if eq .Values.prefect.graphql.create true }}
 apiVersion: v1
 kind: Service
 metadata:

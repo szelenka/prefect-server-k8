@@ -18,7 +18,7 @@ spec:
     targetPort: {{ .Values.prefect.website.service.name }}
   tls:
     termination: edge
-{{- if .Values.ingress.tls }}
+{{- if eq .Values.ingress.tls true }}
     key: {{ .Values.ingress.secrets.key }}
     certificate: {{ .Values.ingress.secrets.cert }}
 {{- end }}
@@ -55,7 +55,7 @@ spec:
     targetPort: {{ .Values.prefect.apollo.service.name }}
   tls:
     termination: edge
-{{- if .Values.ingress.tls }}
+{{- if eq .Values.ingress.tls true }}
     key: {{ .Values.ingress.secrets.key }}
     certificate: {{ .Values.ingress.secrets.cert }}
 {{- end }}
@@ -92,7 +92,7 @@ spec:
     targetPort: {{ .Values.prefect.minio.service.name }}
   tls:
     termination: edge
-{{- if .Values.ingress.tls }}
+{{- if eq .Values.ingress.tls true }}
     key: {{ .Values.ingress.secrets.key }}
     certificate: {{ .Values.ingress.secrets.cert }}
 {{- end }}

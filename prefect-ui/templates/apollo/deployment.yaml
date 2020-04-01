@@ -1,4 +1,4 @@
-{{ if .Values.prefect.apollo.create }}
+{{ if eq .Values.prefect.apollo.create true }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

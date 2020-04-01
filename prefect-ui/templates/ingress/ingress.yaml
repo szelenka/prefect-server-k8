@@ -16,7 +16,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.ingress.tls }}
+{{- if eq .Values.ingress.tls true }}
   tls:
     - hosts:
         - {{ .Values.prefect.website.service.domainName | quote }}
