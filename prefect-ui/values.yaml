@@ -223,6 +223,7 @@ securityContext: {}
   # runAsUser: 1000
 
 ingress:
+  create: true
   # 'ingress' = Kubernetes Ingress
   # 'route' = OpenShift Route
   type: ingress

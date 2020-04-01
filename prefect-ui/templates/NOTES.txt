@@ -10,23 +10,21 @@ and watching for both these pods to be in the status 'Running'.
 
 You can find the public IP of the Prefect-UI by doing:
 
-  {{- if eq .Values.ingress.enabled true }}
-  {{- range $host := .Values.ingress.hosts }}
-    {{- range .paths }}
-    http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}
-    {{- end }}
-  {{- end }}
-  {{- else if contains "NodePort" .Values.prefect.website.service.type }}
-    export NODE_PORT=$(kubectl get --namespace {{ include "prefect-ui.namespace" . }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "prefect-ui.fullname" . }})
+  {{- if eq .Values.ingress.create true }}
+
+    http{{ if eq .Values.ingress.tls true }}s{{ end }}://{{ .Values.prefect.website.service.domainName }}/
+  {{ end }}
+  {{- if eq "NodePort" .Values.prefect.website.service.type }}
+    export NODE_PORT=$(kubectl get --namespace {{ include "prefect-ui.namespace" . }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "prefect-ui.fullname" . }}-website)
     export NODE_IP=$(kubectl get nodes --namespace {{ include "prefect-ui.namespace" . }} -o jsonpath="{.items[0].status.addresses[0].address}")
     echo http://$NODE_IP:$NODE_PORT
-  {{- else if contains "LoadBalancer" .Values.prefect.website.service.type }}
+  {{- else if eq "LoadBalancer" .Values.prefect.website.service.type }}
        NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-             You can watch the status of by running 'kubectl get --namespace {{ include "prefect-ui.namespace" . }} svc -w {{ include "prefect-ui.fullname" . }}'
-    export SERVICE_IP=$(kubectl get svc --namespace {{ include "prefect-ui.namespace" . }} {{ include "prefect-ui.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-    echo http://$SERVICE_IP:{{ .Values.service.port }}
-  {{- else if contains "ClusterIP" .Values.prefect.website.service.type }}
-    export POD_NAME=$(kubectl get pods --namespace {{ include "prefect-ui.namespace" . }} -l "app.kubernetes.io/name={{ include "prefect-ui.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+             You can watch the status of by running 'kubectl get --namespace {{ include "prefect-ui.namespace" . }} svc -w {{ include "prefect-ui.fullname" . }}-website'
+    export SERVICE_IP=$(kubectl get svc --namespace {{ include "prefect-ui.namespace" . }} {{ include "prefect-ui.fullname" . }}-website --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+    echo http://$SERVICE_IP:{{ .Values.prefect.website.service.port }}
+  {{- else if eq .Values.prefect.website.service.type "ClusterIP"  }}
+    export POD_NAME=$(kubectl get pods --namespace {{ include "prefect-ui.namespace" . }} -l "app.kubernetes.io/name={{ include "prefect-ui.fullname" . }}-website,app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
     echo "Visit http://127.0.0.1:8080 to use your application"
     kubectl --namespace {{ include "prefect-ui.namespace" . }} port-forward $POD_NAME 8080:80
   {{- end }}
