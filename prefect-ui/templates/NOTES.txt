@@ -24,7 +24,7 @@ You can find the public IP of the Prefect-UI by doing:
     export SERVICE_IP=$(kubectl get svc --namespace {{ include "prefect-ui.namespace" . }} {{ include "prefect-ui.fullname" . }}-website --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
     echo http://$SERVICE_IP:{{ .Values.prefect.website.service.port }}
   {{- else if eq .Values.prefect.website.service.type "ClusterIP"  }}
-    export POD_NAME=$(kubectl get pods --namespace {{ include "prefect-ui.namespace" . }} -l "app.kubernetes.io/name={{ include "prefect-ui.fullname" . }}-website,app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+    export POD_NAME=$(kubectl get pods --namespace {{ include "prefect-ui.namespace" . }} -l "app.kubernetes.io/name={{ include "prefect-ui.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=website" -o jsonpath="{.items[0].metadata.name}")
     echo "Visit http://127.0.0.1:8080 to use your application"
     kubectl --namespace {{ include "prefect-ui.namespace" . }} port-forward $POD_NAME 8080:80
   {{- end }}
