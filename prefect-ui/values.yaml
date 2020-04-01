@@ -5,11 +5,13 @@
 prefect:
   busybox:
     image:
-      repository: busybox:1.28
+      repository: busybox
+      tag: 1.28
   agent:
     create: true
     image:
       repository: prefecthq/prefect
+      tag:
       pullPolicy: Always
     environment: {}
     service: {}
@@ -35,6 +37,7 @@ prefect:
     create: true
     image:
       repository: prefecthq/ui
+      tag:
       pullPolicy: Always
     environment: {}
     service:
@@ -57,6 +60,7 @@ prefect:
     create: true
     image:
       repository: prefecthq/server
+      tag:
       pullPolicy: Always
     environment: {}
     service: {}
@@ -75,6 +79,7 @@ prefect:
     create: true
     image:
       repository: prefecthq/apollo
+      tag:
       pullPolicy: Always
     environment: {}
     service:
@@ -97,6 +102,7 @@ prefect:
     create: true
     image:
       repository: prefecthq/server
+      tag:
       pullPolicy: Always
     environment: {}
     service:
@@ -117,7 +123,8 @@ prefect:
   hasura:
     create: true
     image:
-      repository: hasura/graphql-engine:v1.1.0
+      repository: hasura/graphql-engine
+      tag: v1.1.0
       pullPolicy: IfNotPresent
     environment: {}
     service:
@@ -140,7 +147,8 @@ prefect:
   postgres:
     create: true
     image:
-      repository: centos/postgresql-12-centos7:latest
+      repository: centos/postgresql-12-centos7
+      tag: latest
       pullPolicy: IfNotPresent
     environment: {}
     service:

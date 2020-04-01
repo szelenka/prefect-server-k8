@@ -31,7 +31,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-postgres
-          image: {{ .Values.prefect.busybox.image.repository }}
+          image: "{{ .Values.prefect.busybox.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.busybox.image.tag }}"
           command:
           - sh
           - '-c'
@@ -40,7 +40,7 @@ spec:
         - name: hasura
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.hasura.image.repository }}"
+          image: "{{ .Values.prefect.hasura.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.hasura.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.hasura.image.pullPolicy }}
           command:
           - graphql-engine

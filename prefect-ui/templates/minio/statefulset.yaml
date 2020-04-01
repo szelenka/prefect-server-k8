@@ -31,7 +31,7 @@ spec:
         - name: minio
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.minio.image.repository }}"
+          image: "{{ .Values.prefect.minio.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.minio.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.minio.image.pullPolicy }}
           args:
           - server

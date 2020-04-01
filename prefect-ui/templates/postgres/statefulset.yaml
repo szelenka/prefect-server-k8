@@ -33,7 +33,7 @@ spec:
         - name: postgres
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.postgres.image.repository }}"
+          image: "{{ .Values.prefect.postgres.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.postgres.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.postgres.image.pullPolicy }}
           env:
             - name: POSTGRESQL_USER

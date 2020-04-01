@@ -28,7 +28,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-graphql
-          image: {{ .Values.prefect.busybox.image.repository }}
+          image: "{{ .Values.prefect.busybox.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.busybox.image.tag }}"
           command:
           - sh
           - '-c'
@@ -37,7 +37,7 @@ spec:
         - name: apollo
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.apollo.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.prefect.apollo.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.apollo.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.apollo.image.pullPolicy }}
           command:
           - npm

@@ -28,7 +28,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-apollo
-          image: {{ .Values.prefect.busybox.image.repository }}
+          image: "{{ .Values.prefect.busybox.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.busybox.image.tag }}"
           command:
           - sh
           - '-c'
@@ -37,7 +37,7 @@ spec:
         - name: agent
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.agent.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.prefect.agent.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.agent.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.agent.image.pullPolicy }}
           command:
           - /bin/bash
@@ -82,7 +82,7 @@ spec:
         - name: resource-manager
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.agent.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.prefect.agent.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.agent.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.agent.image.pullPolicy }}
           command:
             - /bin/bash

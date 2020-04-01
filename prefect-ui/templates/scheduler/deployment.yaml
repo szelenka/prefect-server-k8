@@ -28,7 +28,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-graphql
-          image: {{ .Values.prefect.busybox.image.repository }}
+          image: "{{ .Values.prefect.busybox.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.busybox.image.tag }}"
           command:
           - sh
           - '-c'
@@ -37,7 +37,7 @@ spec:
         - name: scheduler
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.scheduler.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.prefect.scheduler.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.scheduler.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.scheduler.image.pullPolicy }}
           command:
           - "python"

@@ -28,7 +28,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-apollo
-          image: {{ .Values.prefect.busybox.image.repository }}
+          image: "{{ .Values.prefect.busybox.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.busybox.image.tag }}"
           command:
           - sh
           - '-c'
@@ -37,7 +37,7 @@ spec:
         - name: nginx
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.website.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.prefect.website.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.website.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.website.image.pullPolicy }}
           command:
           - /docker-entrypoint.sh

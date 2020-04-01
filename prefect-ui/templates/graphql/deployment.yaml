@@ -28,7 +28,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: init-hasura
-          image: {{ .Values.prefect.busybox.image.repository }}
+          image: "{{ .Values.prefect.busybox.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.busybox.image.tag }}"
           command:
           - sh
           - '-c'
@@ -37,7 +37,7 @@ spec:
         - name: graphql
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.prefect.graphql.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.prefect.graphql.image.repository }}:{{ default .Chart.AppVersion .Values.prefect.graphql.image.tag }}"
           imagePullPolicy: {{ .Values.prefect.graphql.image.pullPolicy }}
           command:
           - bash
