@@ -12,7 +12,7 @@ Then this file needs to be merged with what you have on your local system, which
 
 It's important to note that this will break functionality of sending Flows to Prefect Cloud, as well as attempting to 
 launch `prefect server` from the environment where you replace the `backend.toml` file. However, it's easy
-to revert back to the default by removing this file from your system:
+to revert back to the default by removing this file from your system or uncomment/comment the appropriate values:
 
 ```bash
 rm ~/.prefect/backend.toml
@@ -22,6 +22,7 @@ The contents of this file are generated at the time this Helm Chart generates th
 ```yaml
 # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/config.toml
 
+# backend = "cloud"
 backend = "server"
 
 [server]
@@ -36,6 +37,7 @@ endpoint = "${server.host}:${server.port}"
 
 [cloud]
 api = "${${backend}.endpoint}"
+# endpoint = "https://api.prefect.io"
 endpoint = "${cloud.api}"
 graphql = "${cloud.api}/graphql/alpha"
 ```

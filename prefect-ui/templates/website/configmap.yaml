@@ -11,6 +11,7 @@ data:
   backend.toml: |-
     # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/config.toml
 
+    # backend = "cloud"
     backend = "server"
 
     [server]
@@ -25,6 +26,7 @@ data:
 
     [cloud]
     api = "${${backend}.endpoint}"
+    # endpoint = "https://api.prefect.io"
     endpoint = "${cloud.api}"
     graphql = "${cloud.api}/graphql/alpha"
   {{- (.Files.Glob "files/configmap/website*").AsConfig | nindent 2 }}
