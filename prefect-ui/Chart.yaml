@@ -13,6 +13,6 @@ maintainers:
   - name: Scott Zelenka
     email: https://github.com/szelenka
 type: application
-version: 0.0.3
+version: 0.0.4
 # this is the Docker tag of prefect-server (once they start adding them)
 appVersion: latest

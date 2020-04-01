@@ -3,7 +3,28 @@ entries:
   prefect-ui:
   - apiVersion: v2
     appVersion: latest
-    created: "2020-03-31T21:08:27.094875-04:00"
+    created: "2020-04-01T11:07:50.033091-04:00"
+    description: A Helm chart to run Prefect UI on Kubernetes
+    digest: 7e5662deebcc3a9679b39632b4192f9b35749c7c9567883d9e4aa133d97c79ce
+    home: https://github.com/szelenka/prefect-ui
+    icon: https://d33wubrfki0l68.cloudfront.net/452d2a3c0b72872c8a55dcc952543252684f2d33/567cd/assets/img/prefect-logo-full-flat-white.196a5c8b.svg
+    keywords:
+    - python
+    - prefect
+    - prefect-ui
+    maintainers:
+    - email: https://github.com/szelenka
+      name: Scott Zelenka
+    name: prefect-ui
+    sources:
+    - https://github.com/szelenka/prefect-ui
+    type: application
+    urls:
+    - https://szelenka.github.io/prefect-ui/charts/prefect-ui-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: latest
+    created: "2020-04-01T11:07:50.031631-04:00"
     description: A Helm chart to run Prefect UI on Kubernetes
     digest: cd3d0d08e1532f162f5f96cb53cdd1b0d90bfaad32df1008791777da199e6359
     home: https://github.com/szelenka/prefect-ui
@@ -24,7 +45,7 @@ entries:
     version: 0.0.3
   - apiVersion: v2
     appVersion: latest
-    created: "2020-03-31T21:08:27.093335-04:00"
+    created: "2020-04-01T11:07:50.029591-04:00"
     description: A Helm chart to run Prefect UI on Kubernetes
     digest: cb55f69095585e57b8d5d909f2fb1fa0abba5c6352b49e579310e4e8218151d5
     home: https://github.com/szelenka/prefect-ui
@@ -45,7 +66,7 @@ entries:
     version: 0.0.2
   - apiVersion: v2
     appVersion: latest
-    created: "2020-03-31T21:08:27.091575-04:00"
+    created: "2020-04-01T11:07:50.027718-04:00"
     description: A Helm chart to run Prefect UI on Kubernetes
     digest: b76847c39f7448e93898dcf7838185dc3502536288e92b4d445762d08a118873
     home: https://github.com/szelenka/prefect-ui
@@ -64,4 +85,4 @@ entries:
     urls:
     - https://szelenka.github.io/prefect-ui/charts/prefect-ui-0.0.1.tgz
     version: 0.0.1
-generated: "2020-03-31T21:08:27.089335-04:00"
+generated: "2020-04-01T11:07:50.025675-04:00"
