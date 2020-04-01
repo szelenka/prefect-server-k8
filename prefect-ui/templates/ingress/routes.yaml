@@ -92,8 +92,10 @@ spec:
     targetPort: {{ .Values.prefect.minio.service.name }}
   tls:
     termination: edge
-{{- if eq .Values.ingress.tls true }}
+{{- if ne .Values.ingress.secrets.key "" }}
     key: {{ .Values.ingress.secrets.key }}
+{{- end }}
+{{- if ne .Values.ingress.secrets.cert "" }}
     certificate: {{ .Values.ingress.secrets.cert }}
 {{- end }}
   to:

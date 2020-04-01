@@ -2,6 +2,8 @@
 
 This repository contains a Helm Chart for deploying the Prefect UI to Kubernetes.
 
+This was developed and tested on Helm Version 3.1.2.
+
 ## How to consume this Helm Chart on your Kubernetes cluster
 
 First you'll need to add this repository to helm:
@@ -48,6 +50,10 @@ prefect:
     service:
       # specify the externally accessable fully-qualified domain name to access the Vue UI
       domainName: domain-for-user-interface.local
+
+imagePullSecrets:
+  - my-custom-docker-secret
+  - my-other-secret
 
 ingress:
   # is this a Kubernetes 'Ingress' or OpenShift 'Route'?

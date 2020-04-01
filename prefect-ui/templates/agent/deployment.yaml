@@ -19,10 +19,10 @@ spec:
         app.kubernetes.io/component: agent
         {{- include "prefect-ui.selectorLabels" . | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
       serviceAccountName: {{ include "prefect-ui.agentServiceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -55,7 +55,7 @@ spec:
             - name: NAMESPACE
               value: {{ include "prefect-ui.namespace" . }}
             - name: IMAGE_PULL_SECRETS
-              value: ""
+              value: '{{ join "," .Values.imagePullSecrets }}'
             - name: PREFECT__CLOUD__AGENT__LABELS
               value: "[]"
             - name: JOB_MEM_REQUEST
