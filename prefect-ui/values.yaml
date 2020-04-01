@@ -16,7 +16,7 @@ prefect:
     replicas:
       minReplicas: 1
       maxReplicas: 1
-      targetCPUUtilizationPercentage: 80
+      targetCPUUtilizationPercentage: 65
     resources:
       limits:
         cpu: 100m
@@ -45,7 +45,7 @@ prefect:
     replicas:
       minReplicas: 1
       maxReplicas: 4
-      targetCPUUtilizationPercentage: 80
+      targetCPUUtilizationPercentage: 65
     resources:
       limits:
         cpu: 20m
@@ -63,7 +63,7 @@ prefect:
     replicas:
       minReplicas: 1
       maxReplicas: 1
-      targetCPUUtilizationPercentage: 80
+      targetCPUUtilizationPercentage: 65
     resources:
       limits:
         cpu: 100m
@@ -85,7 +85,7 @@ prefect:
     replicas:
       minReplicas: 1
       maxReplicas: 4
-      targetCPUUtilizationPercentage: 80
+      targetCPUUtilizationPercentage: 65
     resources:
       limits:
         cpu: 100m
@@ -106,7 +106,7 @@ prefect:
     replicas:
       minReplicas: 1
       maxReplicas: 4
-      targetCPUUtilizationPercentage: 80
+      targetCPUUtilizationPercentage: 65
     resources:
       limits:
         cpu: 200m
@@ -127,7 +127,7 @@ prefect:
     replicas:
       minReplicas: 1
       maxReplicas: 4
-      targetCPUUtilizationPercentage: 80
+      targetCPUUtilizationPercentage: 65
     resources:
       limits:
         cpu: 200m
