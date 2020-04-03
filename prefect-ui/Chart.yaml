@@ -12,7 +12,16 @@ sources:
 maintainers:
   - name: Scott Zelenka
     email: https://github.com/szelenka
+dependencies:
+  - name: postgresql-ha
+    version: 2.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: prefect.postgres.create
+  - name: minio
+    version: 3.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: prefect.minio.enabled
 type: application
-version: 0.0.4
+version: 0.1.0
 # this is the Docker tag of prefect-server (once they start adding them)
 appVersion: latest

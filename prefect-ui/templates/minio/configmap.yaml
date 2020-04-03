@@ -1,4 +1,4 @@
-{{ if eq .Values.prefect.minio.create true }}
+{{ if .Values.minio }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

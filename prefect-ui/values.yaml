@@ -19,13 +19,13 @@ prefect:
       minReplicas: 1
       maxReplicas: 1
       targetCPUUtilizationPercentage: 65
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
+#    resources:
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 50m
+#        memory: 64Mi
     job_resources:
       limits:
         cpu: 1000m
@@ -49,13 +49,13 @@ prefect:
       minReplicas: 1
       maxReplicas: 4
       targetCPUUtilizationPercentage: 65
-    resources:
-      limits:
-        cpu: 20m
-        memory: 128Mi
-      requests:
-        cpu: 10m
-        memory: 32Mi
+#    resources:
+#      limits:
+#        cpu: 20m
+#        memory: 128Mi
+#      requests:
+#        cpu: 10m
+#        memory: 32Mi
   scheduler:
     create: true
     image:
@@ -68,13 +68,13 @@ prefect:
       minReplicas: 1
       maxReplicas: 1
       targetCPUUtilizationPercentage: 65
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
+#    resources:
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 50m
+#        memory: 64Mi
   apollo:
     create: true
     image:
@@ -91,13 +91,13 @@ prefect:
       minReplicas: 1
       maxReplicas: 4
       targetCPUUtilizationPercentage: 65
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+#    resources:
+#      limits:
+#        cpu: 100m
+#        memory: 128Mi
+#      requests:
+#        cpu: 100m
+#        memory: 128Mi
   graphql:
     create: true
     image:
@@ -113,13 +113,13 @@ prefect:
       minReplicas: 1
       maxReplicas: 4
       targetCPUUtilizationPercentage: 65
-    resources:
-      limits:
-        cpu: 200m
-        memory: 1Gi
-      requests:
-        cpu: 100m
-        memory: 256Mi
+#    resources:
+#      limits:
+#        cpu: 200m
+#        memory: 1Gi
+#      requests:
+#        cpu: 100m
+#        memory: 256Mi
   hasura:
     create: true
     image:
@@ -135,72 +135,125 @@ prefect:
       minReplicas: 1
       maxReplicas: 4
       targetCPUUtilizationPercentage: 65
-    resources:
-      limits:
-        cpu: 200m
-        memory: 1Gi
-      requests:
-        cpu: 100m
-        memory: 256Mi
+#    resources:
+#      limits:
+#        cpu: 200m
+#        memory: 1Gi
+#      requests:
+#        cpu: 100m
+#        memory: 256Mi
     secrets:
       adminSecret: hasura-secret-admin-secret
-  postgres:
-    create: true
-    image:
-      repository: centos/postgresql-12-centos7
-      tag: latest
+
+postgresql-ha:
+  postgresql:
+    database: prefect_server
+    username: prefect
+    password: test-password
+    repmgrUsername: repmgr
+    repmgrPassword: nil
+    repmgrDatabase: repmgr
+    initdbScriptsCM: prefect-ui-postgres-init-scripts
+    postgresqlImage:
+      registry: docker.io
+      repository: bitnami/postgresql-repmgr
+      tag: 11
       pullPolicy: IfNotPresent
-    environment: {}
-    service:
-      name: postgres
-      type: ClusterIP
-      port: 5432
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 4Gi
-      requests:
-        cpu: 500m
-        memory: 1Gi
-    secrets:
-      username: prefect
-      password: test-password
-      database: prefect_server
-    volume:
-      storage: "1Gi"
-      accessModes: ReadWriteOnce
-      mounts:
-        name: postgres-db
-        mountPoint: /var/lib/pgsql/data
-        subPath: pgdata
-  minio:
-    create: false
-    image:
-      repository: minio/minio:RELEASE.2020-03-05T01-04-19Z
-      pullPolicy: IfNotPresent
-    environment: {}
-    service:
-      domainName: minio.prefect.local
-      name: minio
-      type: ClusterIP
-      port: 9000
-    resources:
-      limits:
-        cpu: 100m
-        memory: 8Gi
-      requests:
-        cpu: 50m
-        memory: 1Gi
-    secrets:
-      accessKey: prefect
-      secretKey: test-password
-    volume:
-      storage: "1Gi"
-      accessModes: ReadWriteOnce
-      mounts:
-        name: minio-db
-        mountPoint: /data
-        subPath: data
+    replicaCount: 2
+    updateStrategyType: RollingUpdate
+#    affinity:
+#      podAntiAffinity:
+#        requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#                - key: app.kubernetes.io/component
+#                  operator: In
+#                  values:
+#                    - postgresql
+#            topologyKey: "kubernetes.io/hostname"
+#    resources:
+#      limits:
+#        cpu: 250m
+#        memory: 256Mi
+#      requests:
+#        cpu: 250m
+#        memory: 256Mi
+    livenessProbe:
+      enabled: true
+    readinessProbe:
+      enabled: true
+    networkPolicy:
+      enabled: false
+    metrics:
+      enabled: false
+  service:
+    type: 'ClusterIP'
+    port: 5432
+  # config to runon OpenShift
+  volumePermissions:
+    securityContext:
+      runAsUser: "auto"
+  securityContext:
+    enabled: false
+  shmVolume:
+    enabled: true
+    chmod:
+      enabled: false
+  persistence:
+    enabled: true
+    mountPath: '/bitnami/postgresql'
+    subPath: ''
+    accessModes:
+      - ReadWriteOnce
+    size: '1Gi'
+  pgpool:
+    livenessProbe:
+      enabled: false
+
+minio:
+  mode: distributed
+  disableWebUI: false
+  image:
+    repository: bitnami/minio
+    tag: 2020.4.2-debian-10-r0
+    pullPolicy: IfNotPresent
+  statefulset:
+    replicaCount: 4
+    updateStrategy: RollingUpdate
+  accessKey:
+    password: 'accessKey'
+    forcePassword: true
+  secretKey:
+    password: 'secretKey'
+    forcePassword: true
+#  resources:
+#    limits:
+#      cpu: 250m
+#      memory: 256Mi
+#    requests:
+#      cpu: 250m
+#      memory: 256Mi
+#  affinity:
+#    podAntiAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#          - labelSelector:
+#              matchExpressions:
+#                - key: app.kubernetes.io/component
+#                  operator: In
+#                  values:
+#                    - minio
+#            topologyKey: "kubernetes.io/hostname"
+  persistence:
+    enabled: true
+    mountPath: '/data'
+    subPath: ''
+    accessModes:
+      - ReadWriteOnce
+    size: '1Gi'
+  service:
+    domainName: minio.prefect.local
+    type: 'ClusterIP'
+    port: 9000
 
 imagePullSecrets: []
 nameOverride: ""

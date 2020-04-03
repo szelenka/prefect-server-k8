@@ -1,8 +1,8 @@
-{{ if eq .Values.prefect.postgres.create true }}
+{{ if index .Values "postgresql-ha" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "prefect-ui.name" . }}-postgres
+  name: prefect-ui-postgres-init-scripts
   namespace: {{ include "prefect-ui.namespace" . }}
   labels:
     app.kubernetes.io/component: postgres

@@ -35,7 +35,7 @@ spec:
           command:
           - sh
           - '-c'
-          - 'until nslookup {{ include "prefect-ui.name" . }}-postgres.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.name" . }}-postgres; sleep 2; done'
+          - 'until nslookup {{ .Release.Name }}-postgresql-ha-pgpool.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for {{ include "prefect-ui.name" . }}-postgres; sleep 2; done'
       containers:
         - name: hasura
           securityContext:

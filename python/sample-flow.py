@@ -1,3 +1,14 @@
+# OPTIONAL:
+# manually specify the server before the 'prefect' library is imported
+# this is an alternative to modifying your ~/.prefect/backend.toml file
+import os
+
+os.environ['PREFECT__BACKEND'] = 'server'
+os.environ['PREFECT__SERVER__HOST'] = 'http://api.prefect.local'
+os.environ['PREFECT__SERVER__PORT'] = '80'
+os.environ['PREFECT__SERVER_UI__HOST'] = f'http://prefect.local'
+os.environ['PREFECT__SERVER_UI__PORT'] = '80'
+
 from prefect import task, Flow
 from prefect.environments.storage import Docker
 
@@ -42,6 +53,12 @@ if __name__ == '__main__':
     Then this file needs to be merged with what you have on your local system, which is typically at:
         - ~/.prefect/backend.toml
     """
+    import os
+    os.environ['PREFECT__BACKEND'] = 'server'
+    os.environ['PREFECT__BACKEND_SERVER__ENDPOINT'] = 'http://api.prefect.local'
+    os.environ['PREFECT__SERVER__PORT'] = '80'
+    os.environ['PREFECT__SERVER_UI__HOST'] = f'http://prefect.local'
+    os.environ['PREFECT__SERVER_UI__PORT'] = '80'
     flow.register(
         build=True
     )

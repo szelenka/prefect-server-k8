@@ -5,45 +5,39 @@ we need to ensure we updated our `backend.toml` with the appropriate values.
 
 This file can be downloaded from the Website at the domain you provisioned:
 
-    - http://prefect-ui-website.local/backend.toml
+- http://prefect-ui-website.local/backend.toml
     
 Then this file needs to be merged with what you have on your local system, which is typically at:
-    - ~/.prefect/backend.toml
 
-It's important to note that this will break functionality of sending Flows to Prefect Cloud, as well as attempting to 
-launch `prefect server` from the environment where you replace the `backend.toml` file. However, it's easy
-to revert back to the default by removing this file from your system or uncomment/comment the appropriate values:
+- ~/.prefect/backend.toml
 
+If you use the official documentation to switch between `cloud` and `server`, it will overwrite this file each time:
 ```bash
-rm ~/.prefect/backend.toml
-```
+prefect backend cloud
+prefect backend server
+``` 
+
+If you inadvertently call those commands, you can simply replace your `~/.prefect/backend.toml` file with the one
+generated on the server you deployed.
 
 The contents of this file are generated at the time this Helm Chart generates the Kubernetes manifest files:
 ```yaml
 # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/config.toml
-
-# backend = "cloud"
 backend = "server"
 
 [server]
-host = "http://api.prefect.local"
-port = "80"
-endpoint = "${server.host}:${server.port}"
+host = "https://api.prefect.local"
+port = "443"
+endpoint = "${server.host}"
 
     [server.ui]
-    host = "http://prefect.local"
-    port = "80"
-    endpoint = "${server.ui.host}:${server.ui.port}"
-
-[cloud]
-api = "${${backend}.endpoint}"
-# endpoint = "https://api.prefect.io"
-endpoint = "${cloud.api}"
-graphql = "${cloud.api}/graphql/alpha"
+    host = "https://prefect.local"
+    port = "443"
+    endpoint = "${server.ui.host}"
 ```
 
 Then you can simply register a Flow as your would normally, and it'll even give you a link to the site after
 it registers successfully:
 ```bash
-Flow: http://prefect.local:80/flow/d6c05bd9-ec38-46f1-9af4-f499038e1126
+Flow: http://prefect.local/flow/d6c05bd9-ec38-46f1-9af4-f499038e1126
 ```

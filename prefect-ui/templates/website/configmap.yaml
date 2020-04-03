@@ -10,24 +10,16 @@ metadata:
 data:
   backend.toml: |-
     # https://github.com/PrefectHQ/prefect/blob/master/src/prefect/config.toml
-
-    # backend = "cloud"
     backend = "server"
 
     [server]
     host = "http{{ if eq .Values.ingress.tls true }}s{{ end }}://{{ .Values.prefect.apollo.service.domainName }}"
     port = "{{ if eq .Values.ingress.tls true }}443{{ else }}80{{ end }}"
-    endpoint = "${server.host}:${server.port}"
+    endpoint = "${server.host}"
 
         [server.ui]
         host = "http{{ if eq .Values.ingress.tls true }}s{{ end }}://{{ .Values.prefect.website.service.domainName }}"
         port = "{{ if eq .Values.ingress.tls true }}443{{ else }}80{{ end }}"
-        endpoint = "${server.ui.host}:${server.ui.port}"
-
-    [cloud]
-    api = "${${backend}.endpoint}"
-    # endpoint = "https://api.prefect.io"
-    endpoint = "${cloud.api}"
-    graphql = "${cloud.api}/graphql/alpha"
+        endpoint = "${server.ui.host}"
   {{- (.Files.Glob "files/configmap/website*").AsConfig | nindent 2 }}
 {{ end }}

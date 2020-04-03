@@ -21,6 +21,7 @@ spec:
     - hosts:
         - {{ .Values.prefect.website.service.domainName | quote }}
         - {{ .Values.prefect.apollo.service.domainName | quote}}
+        - {{ .Values.minio.service.domainName | quote}}
       secretName: {{ include "prefect-ui.fullname" . }}-ingress
 {{- end }}
   rules:
@@ -42,13 +43,13 @@ spec:
               serviceName: {{ include "prefect-ui.fullname" . }}-apollo
               servicePort: {{ .Values.prefect.apollo.service.port }}
 {{ end }}
-{{ if and (.Values.prefect.minio.create) (.Values.prefect.minio.service.domainName) }}
-    - host: {{ .Values.prefect.minio.service.domainName }}
+{{ if and (.Values.minio) (.Values.minio.service.domainName) }}
+    - host: {{ .Values.minio.service.domainName }}
       http:
         paths:
           - path: /
             backend:
-              serviceName: {{ include "prefect-ui.fullname" . }}-minio
-              servicePort: {{ .Values.prefect.minio.service.port }}
+              serviceName: {{ .Release.Name }}-minio
+              servicePort: {{ .Values.minio.service.port }}
 {{ end }}
 {{- end }}

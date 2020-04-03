@@ -1,3 +1,4 @@
 **/test/*
 .idea/*
 .DS_Store
+prefect-ui/charts/*.tgz

@@ -73,7 +73,7 @@ status:
     wildcardPolicy: None
 {{ end }}
 ---
-{{ if and (.Values.prefect.minio.create) (.Values.prefect.minio.service.domainName) }}
+{{ if and (.Values.minio) (.Values.minio.service.domainName) }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -87,9 +87,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  host: {{ .Values.prefect.minio.service.domainName | quote }}
+  host: {{ .Values.minio.service.domainName | quote }}
   port:
-    targetPort: {{ .Values.prefect.minio.service.name }}
+    targetPort: {{ .Values.minio.service.name }}
   tls:
     termination: edge
 {{- if ne .Values.ingress.secrets.key "" }}
@@ -100,7 +100,7 @@ spec:
 {{- end }}
   to:
     kind: Service
-    name: {{ include "prefect-ui.fullname" . }}-minio
+    name: {{ .Release.Name }}-minio
     weight: 100
 status:
   ingress:

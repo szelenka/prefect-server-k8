@@ -8,15 +8,15 @@ This was developed and tested on Helm Version 3.1.2.
 
 First you'll need to add this repository to helm:
 ```bash
-helm repo add prefect-ui https://szelenka.github.io/prefect-ui/charts
+helm repo add prefect-server-k8 https://szelenka.github.io/prefect-server-k8/charts
 ```
 
 It should now show up on your system:
 ```bash
 helm repo list
 
-NAME            URL                                        
-prefect-ui      https://szelenka.github.io/prefect-ui/charts
+NAME                    URL                                                 
+prefect-server-k8       https://szelenka.github.io/prefect-server-k8/charts
 ```
 
 The last step is to perform an installation. In most cases you'll likely want to review the
@@ -81,7 +81,7 @@ common variables to adjust.
 
 Then create the services with your custom values:
 ```bash
-helm install -f my-custom-values.yaml instance-name prefect-ui/prefect-ui
+helm install -f my-custom-values.yaml instance-name prefect-server-k8/prefect-ui
 ```
 
 ## How to register Prefect Flows to this instance
